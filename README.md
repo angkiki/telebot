@@ -1,5 +1,6 @@
 # Angkiki's Telebot
 
 ### TODO:
-* Set up DB for handling chat_id & current command
-* chats table should have many users(with usernames)
+1. Read incoming user
+2. Check current user's command
+3. Respond according to current user's command
