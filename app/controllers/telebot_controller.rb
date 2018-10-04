@@ -10,7 +10,7 @@ class TelebotController < ApplicationController
       @username = params['message']['chat']['username']
 
       # query for the chat
-      @chat = Chat.find_by(chat_id: @chat_id)
+      @chat = Chat.find_by(chat_id: @chat_id, username: @username)
 
       # not nil, chat_id exists
       if (@chat)
@@ -22,7 +22,7 @@ class TelebotController < ApplicationController
         render json: @response, status: 200
       else
         # first time user is talking to our bot
-        Chat.new_chat(@chat_id)
+        Chat.new_chat(@chat_id, @username)
 
         # respond with first time greeting
         @response = {
