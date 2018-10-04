@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2018_10_04_061856) do
 
   create_table "chats", force: :cascade do |t|
     t.integer "chat_id"
+    t.string "username"
     t.string "command"
   end
 

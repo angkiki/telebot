@@ -16,3 +16,8 @@
   * /food, /shopping, /misc, transport
 2. /save [amount] [description]
   * command state reverts back to /done after this step
+
+### Sequence of Events for Bot:
+1. Parse incoming command
+2. If valid, check current command step
+3. Respond according to current command step and incoming command 
