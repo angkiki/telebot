@@ -5,12 +5,13 @@ class TelebotController < ApplicationController
     # just to make sure that the request is coming in with the expected json key
     if params['message']
       # get hold of the important params first
-      @chat_id = params['message']['from']['id'] #chat_id is the users unique identifier for telegram
+      @chat_id = params['message']['chat']['id'] # chat id
+      @users_telegram_id = params['message']['from']['id'] #users unique identifier for telegram
       @command = params['message']['text']
       @username = params['message']['from']['username']
 
       # query for the chat
-      @chat = Chat.find_by(chat_id: @chat_id)
+      @chat = Chat.find_by(chat_id: @users_telegram_id)
 
       # not nil, chat_id exists
       if (@chat)
@@ -22,7 +23,7 @@ class TelebotController < ApplicationController
         render json: @response, status: 200
       else
         # first time user is talking to our bot
-        Chat.new_chat(@chat_id)
+        Chat.new_chat(@users_telegram_id)
 
         # respond with first time greeting
         @response = {
