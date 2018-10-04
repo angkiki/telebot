@@ -9,17 +9,16 @@ class TelebotController < ApplicationController
       @response = {
         "method": "sendMessage",
         "chat_id": @chat_id,
-        "text": "Hello! :)"
+        "text": "Hello! :)",
+        "html": "<p>Ok</p>"
       }
 
       respond_to do |format|
-        format.html { redirect_to '/' }
         format.json { render json: @response, status: 200 }
       end
     else
       respond_to do |format|
-        format.html { redirect_to '/' }
-        format.json { render json: {error: 'Error'}, status: 422 }
+        format.json { render json: {error: 'Error', html: '<p>Error</p>'}, status: 422 }
       end
     end
   end
