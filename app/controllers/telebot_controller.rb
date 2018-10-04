@@ -13,10 +13,12 @@ class TelebotController < ApplicationController
       }
 
       respond_to do |format|
+        format.html { redirect_to '/' }
         format.json { render json: @response, status: 200 }
       end
     else
       respond_to do |format|
+        format.html { redirect_to '/' }
         format.json { render json: {error: 'Error'}, status: 422 }
       end
     end
