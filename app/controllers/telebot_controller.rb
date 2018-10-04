@@ -2,17 +2,34 @@ class TelebotController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def telebot_webhook
+    # just to make sure that the request is coming in with the expected json key
     if params['message']
+      # get hold of the important params first
       @chat_id = params['message']['chat']['id']
       @command = params['message']['text']
+      @username = params['message']['chat']['username']
 
-      @response = {
-        "method": "sendMessage",
-        "chat_id": @chat_id,
-        "text": "Hello! :)"
-      }
-      
-      render json: @response, status: 200
+      # query for the chat
+      @chat = Chat.find_by(chat_id: @chat_id)
+
+      # not nil, chat_id exists
+      if (@chat)
+        @response = {
+          "method": "sendMessage",
+          "chat_id": @chat_id,
+          "text": "Welcome back #{@username}! :D"
+        }
+        render json: @response, status: 200
+      else
+        # first time user is talking to our bot
+        @response = {
+          "method": "sendMessage",
+          "chat_id": @chat_id,
+          "text": "Hello! I see that you're new here. Welcome to Angkiki's Telebot :)"
+        }
+        render json: @response, status: 200
+      end
+
     else
       render json: {error: 'Error'}, status: 422
     end
