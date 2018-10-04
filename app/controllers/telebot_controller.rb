@@ -22,6 +22,7 @@ class TelebotController < ApplicationController
         render json: @response, status: 200
       else
         # first time user is talking to our bot
+        puts "USERNAME: #{@username}"
         Chat.new_chat(@chat_id, @username)
 
         # respond with first time greeting
