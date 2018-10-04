@@ -7,7 +7,7 @@ class TelebotController < ApplicationController
       # get hold of the important params first
       @chat_id = params['message']['chat']['id']
       @command = params['message']['text']
-      @username = params['message']['chat']['username']
+      @username = params['message']['from']['username']
 
       # query for the chat
       @chat = Chat.find_by(chat_id: @chat_id, username: @username)
