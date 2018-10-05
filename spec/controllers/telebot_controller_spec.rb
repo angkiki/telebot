@@ -21,6 +21,7 @@ RSpec.describe TelebotController, type: :controller do
       # base cases
       @telebot.instance_eval{ parse_incoming_text('/food') }.should eq(['/food'])
       @telebot.instance_eval{ parse_incoming_text('/food@angkiki_bot') }.should eq(['/food'])
+      @telebot.instance_eval{ parse_incoming_text('/save') }.should eq(['/save'])
       @telebot.instance_eval{ parse_incoming_text('/save 100 food') }.should eq(['/save', '100 food'])
       @telebot.instance_eval{ parse_incoming_text('/save@angkiki_bot 100 food') }.should eq(['/save', '100 food'])
 

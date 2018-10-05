@@ -73,7 +73,14 @@ class TelebotController < ApplicationController
   def parse_incoming_text(text)
     text.include?('@angkiki_bot') ? @command = text.downcase.split('@angkiki_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
-    return @valid_command == 4 ? [@command[0], @command[1].strip] : [@command[0]] if @valid_command
+    
+    if @valid_command
+      if @valid_command == 4
+        return @command[1] ? [ @command[0], @command[1].strip ] : [ @command[0] ]
+      else
+        return [ @command[0] ]
+      end
+    end
     false
   end
 
