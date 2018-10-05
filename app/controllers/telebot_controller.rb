@@ -17,11 +17,11 @@ class TelebotController < ApplicationController
       # not nil, chat_id exists
       if (@chat)
         # parse the incoming coming
-        @parsed_command = parse_incoming_text(@command, @chat_type)
+        @parsed_command = parse_incoming_text(@command)
 
         # render text according to the incoming command
         if @parsed_command
-          @text = "Hi #{@username}, you sent the command #{@parsed_command[0]}"
+          @text = check_command_sequence(@chat.command, @parsed_command, @chat)
         else
           @text = "Hi #{@username}, you sent an invalid command"
         end
@@ -70,10 +70,10 @@ class TelebotController < ApplicationController
 
   # parsing the incoming text, chat type is for us to determine
   # if we want to check for @angkiki_bot
-  def parse_incoming_text(text, chat_type)
+  def parse_incoming_text(text)
     text.include?('@angkiki_bot') ? @command = text.downcase.split('@angkiki_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
-    return @valid_command == 4 ? [@command[0], @command[1]] : [@command[0]] if @valid_command
+    return @valid_command == 4 ? [@command[0], @command[1].strip] : [@command[0]] if @valid_command
     false
   end
 
@@ -93,12 +93,17 @@ class TelebotController < ApplicationController
         return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
       else
         # update Chat to indicate new sequence
-        Chat.update_command(chat, incoming_command)
+        Chat.update_command(chat, incoming_command[0])
         # incoming_command == Initiators
-        return "Hi #{chat.username}, you have initiated the #{incoming_command} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+        return "Hi #{chat.username}, you have initiated the #{incoming_command[0]} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       end
     when '/food', '/shopping', '/transport', '/misc'
-      return "Hi #{chat.username}, this feature is a work in progress!"
+      if (incoming_command[0] == '/cancel')
+        Chat.update_command(chat, '/done')
+        return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
+      else
+        return "Hi #{chat.username}, this feature is a work in progress!"
+      end
     end
   end
 end
