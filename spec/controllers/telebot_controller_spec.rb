@@ -2,12 +2,11 @@ require 'rails_helper'
 
 RSpec.describe TelebotController, type: :controller do
 
+  before do
+    @telebot = TelebotController.new
+  end
+
   describe "Testing Telebot's Private Methods" do
-
-    before do
-      @telebot = TelebotController.new
-    end
-
     it "Can check for valid commands - @accepted_commands(command)" do
       # base cases
       @telebot.instance_eval{ accepted_commands('/food') }.should eq(0)
@@ -53,13 +52,23 @@ RSpec.describe TelebotController, type: :controller do
 
       # ~ ~ ~ current_command is now /food ~ ~ ~
 
-      #currently, default response if sequence is food is feature not built yet
-      @unbuilt_response = "Hi #{CHAT.username}, this feature is a work in progress!"
-      @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save'], CHAT) }.should eq(@unbuilt_response)
+      # testing /save error(edge) cases first
+      @error_save_response = "Hi #{CHAT.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save'], CHAT) }.should eq(@error_save_response)
+
+      @error_save_response2 = "Hi #{CHAT.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save', 'abc food for lunch'], CHAT) }.should eq(@error_save_response2)
+
+      # testing /save responses
+      @save_response = "Hi #{CHAT.username}, you are recording the following transaction: /food - $100.0 for: food for lunch."
+      @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save', '100 food for lunch'], CHAT) }.should eq(@save_response)
 
       # but can cancel if we are in initiated sequence
       @cancel_response = "Hi #{CHAT.username}, you have cancelled the current sequence - #{CHAT.command}"
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/cancel'], CHAT) }.should eq(@cancel_response)
+
+      # expect CHAT's command to be updated
+      expect(CHAT.command).to eq('/done')
     end
   end
 end

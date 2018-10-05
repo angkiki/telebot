@@ -73,7 +73,7 @@ class TelebotController < ApplicationController
   def parse_incoming_text(text)
     text.include?('@angkiki_bot') ? @command = text.downcase.split('@angkiki_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
-    
+
     if @valid_command
       if @valid_command == 4
         return @command[1] ? [ @command[0], @command[1].strip ] : [ @command[0] ]
@@ -108,9 +108,28 @@ class TelebotController < ApplicationController
       if (incoming_command[0] == '/cancel')
         Chat.update_command(chat, '/done')
         return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
+      elsif (incoming_command[0] == '/save')
+        # check to make sure its not a blank /save command without [AMOUNT] & [DESCRIPTION]
+        if (incoming_command[1])
+          @amount = parse_to_float(incoming_command[1].split(' ', 2)[0])
+          @description = incoming_command[1].split(' ', 2)[1]
+        end
+
+        return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}." if @amount
+
+        "Hi #{chat.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       else
         return "Hi #{chat.username}, this feature is a work in progress!"
       end
+    end # end of case
+  end # end of check_command_sequence
+
+  def parse_to_float(str)
+    begin
+      number = Float(str)
+      return number
+    rescue ArgumentError
+      return false
     end
   end
 end
