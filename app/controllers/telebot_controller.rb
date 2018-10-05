@@ -26,7 +26,7 @@ class TelebotController < ApplicationController
           @text = "Hi #{@username}, you sent an invalid command"
         end
 
-        # respond to user 
+        # respond to user
         @response = {
           "method": "sendMessage",
           "chat_id": @chat_id,
@@ -65,20 +65,40 @@ class TelebotController < ApplicationController
       '/save',
       '/cancel',
     ]
-
     return @COMMANDS.index(command)
   end
 
   # parsing the incoming text, chat type is for us to determine
   # if we want to check for @angkiki_bot
   def parse_incoming_text(text, chat_type)
-    text.include?('@angkiki_bot') ? @command = text.split('@angkiki_bot') : @command = text.split(' ')
+    text.include?('@angkiki_bot') ? @command = text.downcase.split('@angkiki_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
-
-    if @valid_command
-      return @valid_command == 4 ? [@command[0], @command[1], @command[2]] : [@command[0]]
-    end
-
+    return @valid_command == 4 ? [@command[0], @command[1]] : [@command[0]] if @valid_command
     false
+  end
+
+  # take in the incoming command, and existing command and check if its correct
+  def check_command_sequence(current_command, incoming_command, chat)
+    # incoming_command will always be [ COMMAND, ARGUMENTS ]
+    # if current_command is /done, expect Initiators
+    # if current_command is /done, and incoming_command is /cancel, say nothing to cancel
+    # if current_command is Initiators, expect /save or /cancel
+    case current_command
+    when '/done'
+      if (incoming_command[0] == '/cancel')
+        # nothing to cancel
+        return "Hi #{chat.username}, you have no ongoing commands with Fwenny, so I have nothing to cancel!"
+      elsif (incoming_command[0] == '/save')
+        # nothing to save
+        return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
+      else
+        # update Chat to indicate new sequence
+        Chat.update_command(chat, incoming_command)
+        # incoming_command == Initiators
+        return "Hi #{chat.username}, you have initiated the #{incoming_command} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      end
+    when '/food', '/shopping', '/transport', '/misc'
+      return "Hi #{chat.username}, this feature is a work in progress!"
+    end
   end
 end
