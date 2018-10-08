@@ -2,52 +2,68 @@ class TelebotController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def telebot_webhook
-    # just to make sure that the request is coming in with the expected json key
-    if params['message']
-      # get hold of the important params first
-      @chat_id = params['message']['chat']['id'] # chat id
-      @users_telegram_id = params['message']['from']['id'] #users unique identifier for telegram
-      @command = params['message']['text']
-      @username = params['message']['from']['username']
-      @chat_type = params['message']['chat']['type'] # if is group, you want to check for @angkiki_bot
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # if response doesnt contain expected params
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    return render json: {error: 'Error'}, status: 422 if !params['message']
 
-      # query for the chat
-      @chat = Chat.find_by(chat_id: @users_telegram_id)
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # get hold of the important params first
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    @chat_id = params['message']['chat']['id'] if params['message']['chat'] # chat id
+    @users_telegram_id = params['message']['from']['id'] if params['message']['from'] #users unique identifier for telegram
+    @command = params['message']['text']
+    @username = params['message']['from']['username'] if params['message']['from']
+    @chat_type = params['message']['chat']['type'] if params['message']['chat'] # if is group, you want to check for @angkiki_bot
 
-      # not nil, chat_id exists
-      if (@chat)
-        # parse the incoming coming
-        @parsed_command = parse_incoming_text(@command)
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # if any of the important params is nil, we want to return with an error
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    if !@chat_id && !@users_telegram_id && !@command && !@username && !@chat_type
+      return render json: {error: 'Error'}, status: 422 if !params['message']
+    end
 
-        # render text according to the incoming command
-        if @parsed_command
-          @text = check_command_sequence(@chat.command, @parsed_command, @chat)
-        else
-          @text = "Hi #{@username}, you sent an invalid command"
-        end
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # query for the chat
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    @chat = Chat.find_by(chat_id: @users_telegram_id)
 
-        # respond to user
-        @response = {
-          "method": "sendMessage",
-          "chat_id": @chat_id,
-          "text": @text
-        }
-        render json: @response, status: 200
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # not nil, chat_id exists
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    if (@chat)
+      # parse the incoming coming
+      @parsed_command = parse_incoming_text(@command)
+
+      # render text according to the incoming command
+      if @parsed_command
+        @text = check_command_sequence(@chat.command, @parsed_command, @chat)
       else
-        # first time user is talking to our bot
-        Chat.new_chat(@users_telegram_id, @username)
-
-        # respond with first time greeting
-        @response = {
-          "method": "sendMessage",
-          "chat_id": @chat_id,
-          "text": "Hello! I see that you're new here. Welcome to Angkiki's Telebot :)"
-        }
-        render json: @response, status: 200
+        @text = "Hi #{@username}, you sent an invalid command"
       end
 
+      # respond to user
+      @response = {
+        "method": "sendMessage",
+        "chat_id": @chat_id,
+        "text": @text
+      }
+      render json: @response, status: 200
+
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    # chat_id doesn't exist
+    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     else
-      render json: {error: 'Error'}, status: 422
+      # first time user is talking to our bot
+      Chat.new_chat(@users_telegram_id, @username)
+
+      # respond with first time greeting
+      @response = {
+        "method": "sendMessage",
+        "chat_id": @chat_id,
+        "text": "Hello! I see that you're new here. Welcome to Angkiki's Telebot :)"
+      }
+      render json: @response, status: 200
     end
   end
 
