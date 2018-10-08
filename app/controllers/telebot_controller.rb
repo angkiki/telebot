@@ -113,9 +113,12 @@ class TelebotController < ApplicationController
         if (incoming_command[1])
           @amount = parse_to_float(incoming_command[1].split(' ', 2)[0])
           @description = incoming_command[1].split(' ', 2)[1]
+          Transaction.create(amount: @amount, description: @description, chat: chat, category: current_command)
         end
 
-        return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}." if @amount
+        if @amount && @amount > 0.0 && @description
+          return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}."
+        end
 
         "Hi #{chat.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       else

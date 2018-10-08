@@ -1,4 +1,5 @@
 class Chat < ActiveRecord::Base
+  has_many :transactions
 
   def self.new_chat(chat_id, username)
     Chat.create(chat_id: chat_id, username: username, command: "/done")

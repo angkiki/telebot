@@ -63,6 +63,13 @@ RSpec.describe TelebotController, type: :controller do
       @save_response = "Hi #{CHAT.username}, you are recording the following transaction: /food - $100.0 for: food for lunch."
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save', '100 food for lunch'], CHAT) }.should eq(@save_response)
 
+      # expect a new transaction to be created
+      expect(Transaction.last).to_not eq(nil)
+      expect(Transaction.last.amount).to eq(100.0)
+      expect(Transaction.last.category).to eq('/food')
+      expect(CHAT.transactions.count).to eq(1)
+      expect(CHAT.transactions.last).to eq(Transaction.last)
+
       # but can cancel if we are in initiated sequence
       @cancel_response = "Hi #{CHAT.username}, you have cancelled the current sequence - #{CHAT.command}"
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/cancel'], CHAT) }.should eq(@cancel_response)
