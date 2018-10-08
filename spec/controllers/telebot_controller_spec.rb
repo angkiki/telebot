@@ -70,10 +70,6 @@ RSpec.describe TelebotController, type: :controller do
       expect(CHAT.transactions.count).to eq(1)
       expect(CHAT.transactions.last).to eq(Transaction.last)
 
-      # but can cancel if we are in initiated sequence
-      @cancel_response = "Hi #{CHAT.username}, you have cancelled the current sequence - #{CHAT.command}"
-      @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/cancel'], CHAT) }.should eq(@cancel_response)
-
       # expect CHAT's command to be updated
       expect(CHAT.command).to eq('/done')
     end

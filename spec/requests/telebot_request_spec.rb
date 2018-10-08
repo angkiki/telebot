@@ -125,6 +125,9 @@ describe "Making POST to telebot#telebot_webhook" do
       # sending /save
       post '/telebot-webhook', params: @save_params
       expect(response.parsed_body['text']).to eq("Hi angkiki, you are recording the following transaction: /food - $100.0 for: chicken rice for lunch.")
+
+      # command updates accordingly
+      expect(Chat.find_by(username: 'angkiki').command).to eq('/done')
     end
   end
 
