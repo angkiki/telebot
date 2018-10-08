@@ -91,7 +91,7 @@ describe "Making POST to telebot#telebot_webhook" do
 
     it "should have a 422 response code for a post with params['message'] but no other valid keys" do
       post '/telebot-webhook', params: { message: 'there is a message key in params' }
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(422)
     end
 
   end
