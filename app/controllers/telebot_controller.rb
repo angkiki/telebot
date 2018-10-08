@@ -19,8 +19,8 @@ class TelebotController < ApplicationController
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     # if any of the important params is nil, we want to return with an error
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-    if !@chat_id && !@users_telegram_id && !@command && !@username && !@chat_type
-      return render json: {error: 'Error'}, status: 422 if !params['message']
+    if @chat_id.nil? || @users_telegram_id.nil? || @command.nil? || @username.nil? || @chat_type.nil?
+      return render json: {error: 'Error'}, status: 422
     end
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -150,10 +150,11 @@ class TelebotController < ApplicationController
         # incoming_command[1] will typically look like "100 chicken rice for lunch"
         @amount = parse_to_float(incoming_command[1].split(' ', 2)[0]) # gives us 100.0
         @description = incoming_command[1].split(' ', 2)[1] # gives us "chicken rice for lunch"
-        Transaction.create(amount: @amount, description: @description, chat: chat, category: current_command)
       end
 
       if @amount && @amount > 0.0 && @description
+        Transaction.create(amount: @amount, description: @description, chat: chat, category: current_command)
+        Chat.update_command(chat, '/done')
         return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}."
       end
 
