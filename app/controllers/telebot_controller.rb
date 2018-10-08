@@ -55,6 +55,15 @@ class TelebotController < ApplicationController
   private
   # telebot helper methods
 
+  def parse_to_float(str)
+    begin
+      number = Float(str)
+      return number
+    rescue ArgumentError
+      return false
+    end
+  end
+
   # check if it is a command we recognise
   def accepted_commands(command)
     @COMMANDS = [
@@ -75,7 +84,7 @@ class TelebotController < ApplicationController
     @valid_command = accepted_commands(@command[0])
 
     if @valid_command
-      if @valid_command == 4
+      if @valid_command == 4 # currently index 4 is '/save'
         return @command[1] ? [ @command[0], @command[1].strip ] : [ @command[0] ]
       else
         return [ @command[0] ]
@@ -92,47 +101,50 @@ class TelebotController < ApplicationController
     # if current_command is Initiators, expect /save or /cancel
     case current_command
     when '/done'
-      if (incoming_command[0] == '/cancel')
-        # nothing to cancel
-        return "Hi #{chat.username}, you have no ongoing commands with Fwenny, so I have nothing to cancel!"
-      elsif (incoming_command[0] == '/save')
-        # nothing to save
-        return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
-      else
-        # update Chat to indicate new sequence
-        Chat.update_command(chat, incoming_command[0])
-        # incoming_command == Initiators
-        return "Hi #{chat.username}, you have initiated the #{incoming_command[0]} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
-      end
+      return done_command(incoming_command, current_command, chat)
     when '/food', '/shopping', '/transport', '/misc'
-      if (incoming_command[0] == '/cancel')
-        Chat.update_command(chat, '/done')
-        return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
-      elsif (incoming_command[0] == '/save')
-        # check to make sure its not a blank /save command without [AMOUNT] & [DESCRIPTION]
-        if (incoming_command[1])
-          @amount = parse_to_float(incoming_command[1].split(' ', 2)[0])
-          @description = incoming_command[1].split(' ', 2)[1]
-          Transaction.create(amount: @amount, description: @description, chat: chat, category: current_command)
-        end
-
-        if @amount && @amount > 0.0 && @description
-          return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}."
-        end
-
-        "Hi #{chat.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
-      else
-        return "Hi #{chat.username}, this feature is a work in progress!"
-      end
+      return initiators_command(incoming_command, current_command, chat)
     end # end of case
   end # end of check_command_sequence
 
-  def parse_to_float(str)
-    begin
-      number = Float(str)
-      return number
-    rescue ArgumentError
-      return false
+  # function for handling when the CURRENT COMMAND is /done
+  def done_command(incoming_command, current_command, chat)
+    if (incoming_command[0] == '/cancel')
+      # nothing to cancel
+      return "Hi #{chat.username}, you have no ongoing commands with Fwenny, so I have nothing to cancel!"
+    elsif (incoming_command[0] == '/save')
+      # nothing to save
+      return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
+    else
+      # update Chat to indicate new sequence (one of the Initiator)
+      Chat.update_command(chat, incoming_command[0])
+      # incoming_command == Initiators
+      return "Hi #{chat.username}, you have initiated the #{incoming_command[0]} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+    end
+  end
+
+  # handling when the CURRENT COMMAND is an Initiator
+  def initiators_command(incoming_command, current_command, chat)
+    if (incoming_command[0] == '/cancel')
+      Chat.update_command(chat, '/done')
+      return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
+    elsif (incoming_command[0] == '/save')
+      # check to make sure its not a blank /save command without [AMOUNT] & [DESCRIPTION]
+      if (incoming_command[1])
+        # incoming_command[1] will typically look like "100 chicken rice for lunch"
+        @amount = parse_to_float(incoming_command[1].split(' ', 2)[0]) # gives us 100.0
+        @description = incoming_command[1].split(' ', 2)[1] # gives us "chicken rice for lunch"
+        Transaction.create(amount: @amount, description: @description, chat: chat, category: current_command)
+      end
+
+      if @amount && @amount > 0.0 && @description
+        return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}."
+      end
+
+      "Hi #{chat.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+    else
+      # one of the Initiators command
+      return "Hi #{chat.username}, this feature is a work in progress!"
     end
   end
 end
