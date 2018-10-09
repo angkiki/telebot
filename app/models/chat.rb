@@ -16,13 +16,13 @@ class Chat < ActiveRecord::Base
     @transactions.each do |t|
       case t.category
       when '/food'
-        @spendings[:food] += 1
+        @spendings[:food] += t.amount
       when '/shopping'
-        @spendings[:shopping] += 1
+        @spendings[:shopping] += t.amount
       when '/transport'
-        @spendings[:transport] += 1
+        @spendings[:transport] += t.amount
       when '/misc'
-        @spendings[:misc] += 1
+        @spendings[:misc] += t.amount
       end
     end
 
