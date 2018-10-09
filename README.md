@@ -1,15 +1,8 @@
 # Angkiki's Telebot
 
 ### TODO:
-1. Read incoming user
-2. Check current user's command
-  * if under Initiators, expect /save
-  * ensure that [amount] is a float
-  * else, expect Initiators
-3. Respond according to current user's command
-  * if Initiators, prompt for /save [amount] [description]
-  * if /save, respond back with recorded details
-  * else, expect Initiators
+1. Query: Transaction.where('extract(month from created_at) = ?', 10) for getting all transactions in a month
+2. Spendings query command 
 
 ### Available Commands:
 food - add expense to food
