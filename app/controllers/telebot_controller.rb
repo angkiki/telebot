@@ -89,6 +89,7 @@ class TelebotController < ApplicationController
       '/misc',
       '/save',
       '/cancel',
+      '/spendings'
     ]
     return @COMMANDS.index(command)
   end
@@ -125,12 +126,16 @@ class TelebotController < ApplicationController
 
   # function for handling when the CURRENT COMMAND is /done
   def done_command(incoming_command, current_command, chat)
-    if (incoming_command[0] == '/cancel')
+    case incoming_command[0]
+    when '/cancel'
       # nothing to cancel
       return "Hi #{chat.username}, you have no ongoing commands with Fwenny, so I have nothing to cancel!"
-    elsif (incoming_command[0] == '/save')
+    when '/save'
       # nothing to save
       return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
+    when '/spendings'
+      @spendings = chat.total_spendings(Date.today.month)
+      return "Hi #{chat.username}, your spendings for #{Date.today.strftime("%B")} is: \n Food: #{@spendings[:food]} \n Shopping: #{@spendings[:shopping]} \n Transport: #{@spendings[:transport]} \n Misc: #{@spendings[:misc]}"
     else
       # update Chat to indicate new sequence (one of the Initiator)
       Chat.update_command(chat, incoming_command[0])
@@ -141,10 +146,11 @@ class TelebotController < ApplicationController
 
   # handling when the CURRENT COMMAND is an Initiator
   def initiators_command(incoming_command, current_command, chat)
-    if (incoming_command[0] == '/cancel')
+    case incoming_command[0]
+    when '/cancel'
       Chat.update_command(chat, '/done')
       return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
-    elsif (incoming_command[0] == '/save')
+    when '/save'
       # check to make sure its not a blank /save command without [AMOUNT] & [DESCRIPTION]
       if (incoming_command[1])
         # incoming_command[1] will typically look like "100 chicken rice for lunch"
