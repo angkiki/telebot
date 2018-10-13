@@ -1,6 +1,6 @@
 class Transaction < ApplicationRecord
   belongs_to :chat
-  enum category: [ "/food", "/shopping", "/transport", "misc" ]
+  enum category: [ "/food", "/shopping", "/transport", "/misc" ]
   validate :validates_amount
 
   def validates_amount
