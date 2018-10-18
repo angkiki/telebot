@@ -22,10 +22,10 @@ RSpec.describe Chat, type: :model do
 
     it 'can compute total spendings' do
       @spendings = @chat.total_spendings(Date.today.month)
-      expect(@spendings[:food].is_a?(Float)).to eq(true)
-      expect(@spendings[:shopping].is_a?(Float)).to eq(true)
-      expect(@spendings[:transport].is_a?(Float)).to eq(true)
-      expect(@spendings[:misc].is_a?(Float)).to eq(true)
+      expect(@spendings[:food].is_a?(BigDecimal)).to eq(true)
+      expect(@spendings[:shopping].is_a?(BigDecimal)).to eq(true)
+      expect(@spendings[:transport].is_a?(BigDecimal)).to eq(true)
+      expect(@spendings[:misc].is_a?(BigDecimal)).to eq(true)
     end
   end
 
