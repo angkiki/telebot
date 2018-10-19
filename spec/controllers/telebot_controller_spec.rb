@@ -19,14 +19,14 @@ RSpec.describe TelebotController, type: :controller do
     it "Can parse incoming test - @parse_incoming_text(text)" do
       # base cases
       @telebot.instance_eval{ parse_incoming_text('/food') }.should eq(['/food'])
-      @telebot.instance_eval{ parse_incoming_text('/food@angkiki_bot') }.should eq(['/food'])
+      @telebot.instance_eval{ parse_incoming_text('/food@Fwenny_bot') }.should eq(['/food'])
       @telebot.instance_eval{ parse_incoming_text('/save') }.should eq(['/save'])
       @telebot.instance_eval{ parse_incoming_text('/save 100 food') }.should eq(['/save', '100 food'])
-      @telebot.instance_eval{ parse_incoming_text('/save@angkiki_bot 100 food') }.should eq(['/save', '100 food'])
+      @telebot.instance_eval{ parse_incoming_text('/save@Fwenny_bot 100 food') }.should eq(['/save', '100 food'])
 
       #edge cases
       @telebot.instance_eval{ parse_incoming_text('/poo') }.should eq(false)
-      @telebot.instance_eval{ parse_incoming_text('/poo@angkiki_bot') }.should eq(false)
+      @telebot.instance_eval{ parse_incoming_text('/poo@Fwenny_bot') }.should eq(false)
     end
 
     it "Can handle command sequences - @check_command_sequence(current_command, incoming_command, chat)" do

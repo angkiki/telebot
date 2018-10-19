@@ -97,7 +97,7 @@ class TelebotController < ApplicationController
   # parsing the incoming text, chat type is for us to determine
   # if we want to check for @angkiki_bot
   def parse_incoming_text(text)
-    text.include?('@Fwenny_bot') ? @command = text.downcase.split('@Fwenny_bot') : @command = text.downcase.split(' ', 2)
+    text.include?('@Fwenny_bot') ? @command = text.downcase.split('@fwenny_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
 
     if @valid_command
