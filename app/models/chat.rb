@@ -11,7 +11,7 @@ class Chat < ActiveRecord::Base
 
   def total_spendings(month)
     @transactions = self.transactions.where('extract(month from created_at) = ?', month)
-    @spendings = { food: 0, shopping: 0, transport: 0, misc: 0 }
+    @spendings = { food: 0, shopping: 0, transport: 0, misc: 0, total: 0 }
 
     @transactions.each do |t|
       case t.category
@@ -24,6 +24,8 @@ class Chat < ActiveRecord::Base
       when '/misc'
         @spendings[:misc] += t.amount
       end
+
+      @spendings[:total] += t.amount
     end
 
     return @spendings

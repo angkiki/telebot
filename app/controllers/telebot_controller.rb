@@ -135,7 +135,7 @@ class TelebotController < ApplicationController
       return "Hi #{chat.username}, you have not initiated a new budget sequence. Please send Fwenny either /food, /shopping, /transport or /misc to start a new sequence."
     when '/spendings'
       @spendings = chat.total_spendings(Date.today.month)
-      return "Hi #{chat.username}, your spendings for #{Date.today.strftime("%B")} is: \n Food: #{@spendings[:food]} \n Shopping: #{@spendings[:shopping]} \n Transport: #{@spendings[:transport]} \n Misc: #{@spendings[:misc]}"
+      return "Hi #{chat.username}, your spendings for #{Date.today.strftime("%B")} is: \n Food: #{@spendings[:food]} \n Shopping: #{@spendings[:shopping]} \n Transport: #{@spendings[:transport]} \n Misc: #{@spendings[:misc]} \n Your total spendings is: #{@spendings[:total]}"
     else
       # update Chat to indicate new sequence (one of the Initiator)
       Chat.update_command(chat, incoming_command[0])
