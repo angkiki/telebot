@@ -1,1 +1,4 @@
-<h1>Home</h1>
+<%= form_tag show_user_path, method: :get do %>
+  <%= text_field_tag :chat_id, nil, placeholder: "Enter your chat ID" %>
+  <%= submit_tag %>
+<% end %>
