@@ -1,6 +1,39 @@
-<%= form_tag show_user_path, method: :get do %>
-  <%= text_field_tag :chat_id, nil, placeholder: "Enter your chat ID" %>
-  <%= select_month(Date.today, field_name: "month")%>
-  <%= select_year(Date.today, start_year: 2018, end_year: Date.today.year, field_name: "year") %>
-  <%= submit_tag %>
-<% end %>
+<div class="container">
+  <h1 align="center">Search for your expenses</h1>
+  <br />
+
+  <div class="row">
+    <div class="col-md-8 ml-auto mr-auto">
+      <%= form_tag show_user_path, method: :get do %>
+        <div class="row">
+          <div class="col mr-auto ml-auto">
+            <label for="chat_id">Chat Id</label>
+            <%= text_field_tag :chat_id, nil, placeholder: "Enter your chat ID", class: 'form-control' %>
+          </div>
+        </div>
+        <br />
+
+        <div class="row">
+          <div class="col mr-auto ml-auto">
+            <label for="month">Select Month</label>
+            <%= select_month(Date.today, { field_name: "month" }, { class: 'form-control' }) %>
+          </div>
+        </div>
+        <br />
+
+        <div class="row">
+          <div class="col mr-auto ml-auto">
+            <label for="year">Select Year</label>
+            <%= select_year(Date.today, { start_year: 2018, end_year: Date.today.year, field_name: "year" }, { class: 'form-control' }) %>
+          </div>
+        </div>
+        <br />
+
+        <div class="align">
+          <%= submit_tag 'Search', class: 'btn btn-success' %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
