@@ -1,4 +1,6 @@
 <%= form_tag show_user_path, method: :get do %>
   <%= text_field_tag :chat_id, nil, placeholder: "Enter your chat ID" %>
+  <%= select_month(Date.today, field_name: "month")%>
+  <%= select_year(Date.today, start_year: 2018, end_year: Date.today.year, field_name: "year") %>
   <%= submit_tag %>
 <% end %>
