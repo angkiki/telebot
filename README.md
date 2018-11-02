@@ -2,7 +2,7 @@
 
 ### TODO:
 1. Query: Transaction.where('extract(month from created_at) = ?', 10) for getting all transactions in a month
-2. Spendings query command 
+2. Spendings query command
 
 ### Available Commands:
 food - add expense to food
@@ -12,6 +12,7 @@ misc - add expense to misc
 save - specify amount & description to save
 spendings - total spendings for the current month
 cancel - cancel current command
+id - get telegram id 
 
 1. Initiators (Categories)
   * /food, /shopping, /misc, transport
