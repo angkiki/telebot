@@ -89,7 +89,8 @@ class TelebotController < ApplicationController
       '/misc',
       '/save',
       '/cancel',
-      '/spendings'
+      '/spendings',
+      '/id'
     ]
     return @COMMANDS.index(command)
   end
@@ -127,6 +128,8 @@ class TelebotController < ApplicationController
   # function for handling when the CURRENT COMMAND is /done
   def done_command(incoming_command, current_command, chat)
     case incoming_command[0]
+    when '/id'
+      return "Hi #{chat.username}, your telegram id is: #{chat.chat_id}"
     when '/cancel'
       # nothing to cancel
       return "Hi #{chat.username}, you have no ongoing commands with Fwenny, so I have nothing to cancel!"
@@ -147,6 +150,8 @@ class TelebotController < ApplicationController
   # handling when the CURRENT COMMAND is an Initiator
   def initiators_command(incoming_command, current_command, chat)
     case incoming_command[0]
+    when '/id'
+      return "Hi #{chat.username}, your telegram id is: #{chat.chat_id}"
     when '/cancel'
       Chat.update_command(chat, '/done')
       return "Hi #{chat.username}, you have cancelled the current sequence - #{current_command}"
