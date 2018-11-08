@@ -143,7 +143,7 @@ class TelebotController < ApplicationController
       # update Chat to indicate new sequence (one of the Initiator)
       Chat.update_command(chat, incoming_command[0])
       # incoming_command == Initiators
-      return "Hi #{chat.username}, you have initiated the #{incoming_command[0]} sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      return "Hi #{chat.username}, you have initiated the #{incoming_command[0]} sequence. Please reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction"
     end
   end
 
