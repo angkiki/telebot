@@ -1,6 +1,34 @@
+<br /><br />
+
 <div align="center">
   <h1>Hi <%= @chat.username %></h1>
   <h1>Here's your spendings for <%= @start_date.strftime('%B, %Y') %></h1>
 </div>
 
 <%= pie_chart @transactions.group(:category).sum(:amount) %>
+
+<br /><br />
+
+<div class="container">
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @transactions.each do |tt| %>
+        <tr>
+          <td><%= tt.created_at.strftime('%e %b %Y') %></td>
+          <td><%= number_to_currency(tt.amount, unit: '$') %></td>
+          <td><%= tt.category %></td>
+          <td><%= tt.description %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
