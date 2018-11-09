@@ -22,7 +22,7 @@
 
     <tbody>
       <% @transactions.each do |tt| %>
-        <tr>
+        <tr class="<%= tt.display_class %>">
           <td><%= tt.created_at.strftime('%e %b %Y') %></td>
           <td><%= number_to_currency(tt.amount, unit: '$') %></td>
           <td><%= tt.category %></td>
