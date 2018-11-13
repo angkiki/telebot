@@ -14,7 +14,7 @@ class TelebotController < ApplicationController
     @users_telegram_id = params['message']['from']['id'] if params['message']['from'] #users unique identifier for telegram
     @command = params['message']['text']
     @username = params['message']['from']['username'] if params['message']['from']
-    @chat_type = params['message']['chat']['type'] if params['message']['chat'] # if is group, you want to check for @angkiki_bot
+    @chat_type = params['message']['chat']['type'] if params['message']['chat'] # if is group, you want to check for @Fwenny_bot
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     # if any of the important params is nil, we want to return with an error
@@ -96,7 +96,7 @@ class TelebotController < ApplicationController
   end
 
   # parsing the incoming text, chat type is for us to determine
-  # if we want to check for @angkiki_bot
+  # if we want to check for @Fwenny_bot
   def parse_incoming_text(text)
     text.include?('@Fwenny_bot') ? @command = text.downcase.split('@fwenny_bot') : @command = text.downcase.split(' ', 2)
     @valid_command = accepted_commands(@command[0])
@@ -169,10 +169,10 @@ class TelebotController < ApplicationController
         return "Hi #{chat.username}, you are recording the following transaction: #{current_command} - $#{@amount} for: #{@description}."
       end
 
-      "Hi #{chat.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      "Hi #{chat.username}, you need to reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction"
     else
       # one of the Initiators command
-      return "Hi #{chat.username}, this feature is a work in progress!"
+      return "Hi #{chat.username}, you are currently in the #{chat.command} command. Either enter /save to save your transaction or /cancel to select a new command."
     end
   end
 end
