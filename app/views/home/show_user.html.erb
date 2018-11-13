@@ -2,7 +2,10 @@
 
 <div align="center">
   <h1>Hi <%= @chat.username %></h1>
-  <h1>Here's your spendings for <%= @start_date.strftime('%B, %Y') %></h1>
+  <h1>Your total spendings for
+    <%= @start_date.strftime('%B, %Y') %>:
+    <%= number_to_currency(@transactions.sum(:amount), unit: '$') %>
+  </h1>
 </div>
 
 <%= pie_chart @transactions.group(:category).sum(:amount) %>
