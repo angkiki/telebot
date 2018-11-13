@@ -44,7 +44,7 @@ RSpec.describe TelebotController, type: :controller do
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save'], CHAT) }.should eq(done_save_response)
 
       # initiating new budget sequence - /food
-      done_food_response = "Hi #{CHAT.username}, you have initiated the /food sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      done_food_response = "Hi #{CHAT.username}, you have initiated the /food sequence. Please reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/food'], CHAT) }.should eq(done_food_response)
 
       # expect CHAT's command to be updated
@@ -53,10 +53,10 @@ RSpec.describe TelebotController, type: :controller do
       # ~ ~ ~ current_command is now /food ~ ~ ~
 
       # testing /save error(edge) cases first
-      error_save_response = "Hi #{CHAT.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      error_save_response = "Hi #{CHAT.username}, you need to reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save'], CHAT) }.should eq(error_save_response)
 
-      error_save_response2 = "Hi #{CHAT.username}, you need to reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction"
+      error_save_response2 = "Hi #{CHAT.username}, you need to reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction"
       @telebot.instance_eval{ check_command_sequence(CHAT.command, ['/save', 'abc food for lunch'], CHAT) }.should eq(error_save_response2)
 
       # testing /save responses

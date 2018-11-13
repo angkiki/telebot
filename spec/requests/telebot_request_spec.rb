@@ -170,7 +170,7 @@ describe "Making POST to telebot#telebot_webhook" do
     it "should be able to initiate and perform a save sequence" do
       # initiating /food sequence
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['text']).to eq("Hi #{@chat.username}, you have initiated the /food sequence. Please reply with /save@angkiki_bot [AMOUNT] [DESCRIPTION] to save your transaction")
+      expect(response.parsed_body['text']).to eq("Hi #{@chat.username}, you have initiated the /food sequence. Please reply with /save@Fwenny_bot [AMOUNT] [DESCRIPTION] to save your transaction")
 
       # command updates accordingly
       expect(Chat.last.command).to eq('/food')
