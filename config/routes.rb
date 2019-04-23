@@ -3,4 +3,5 @@ Rails.application.routes.draw do
   root 'home#home'
   get '/show-user', to: 'home#show_user', as: 'show_user'
   post '/telebot-webhook', to: 'telebot#telebot_webhook'
+  get '/pull', to: 'telebot#pull'
 end

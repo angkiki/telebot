@@ -1,5 +1,14 @@
 class TelebotController < ApplicationController
   skip_before_action :verify_authenticity_token
+  def pull
+    @response  = {}
+
+    Chat.all.each do |c| 
+      @response[c.chat_id] = c.transactions.to_json
+    end
+
+    render json: @response, status: 200
+  end
 
   def telebot_webhook
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
